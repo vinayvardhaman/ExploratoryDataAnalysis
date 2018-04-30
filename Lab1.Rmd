@@ -1,0 +1,387 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+```{r}
+# SAJID KHAN - 50248743
+# VINAY VARDHAMAN - 50248852
+#Problem 1
+sales1<-c(12,14,16,29,30,45,19,20,16, 19, 34, 20)
+sales2<-rpois(12,34) # random numbers, Poisson distribution, mean at 34, 12 numbers
+par(bg="cornsilk")
+plot(sales1, col="blue", type="o", ylim=c(0,100), xlab="Month", ylab="Sales" )
+title(main="Sales by Month")
+lines(sales2, type="o", pch=22, lty=2, col="red")
+grid(nx=NA, ny=NULL)
+legend("topright", inset=.05, c("Sales1","Sales2"), fill=c("blue","red"), horiz=TRUE)
+```
+
+```{r}
+#Problem 2
+# Choose salesdata.txt upon file choice
+sales<-read.table(file.choose(), header=T)
+sales # to verify that data has been read
+barplot(as.matrix(sales), main="Sales Data", ylab= "Total",beside=T, col=rainbow(5))
+```
+
+```{r}
+#Problem 3
+fn<-boxplot(sales,col=c("orange","green"))$stats
+text(1.45, fn[3,2], paste("Median =", fn[3,2]), adj=0, cex=.7)
+text(0.45, fn[3,1],paste("Median =", fn[3,1]), adj=0, cex=.7)
+grid(nx=NA, ny=NULL)
+```
+
+```{r}
+#Problem 4
+# Choose FB.csv upon first choice
+# Choose AAPL.csv upon second choice
+fb1<-read.csv(file.choose())
+aapl1<-read.csv(file.choose())
+par(bg="cornsilk")
+plot(aapl1$Adj.Close, col="blue", type="o", ylim=c(150,200), xlab="Days", ylab="Price" )
+lines(fb1$Adj.Close, type="o", pch=22, lty=2, col="red")
+legend("topright", inset=.05, c("Apple","Facebook"), fill=c("blue","red"), horiz=TRUE)
+#Just study the distribution of the adjusted close of the stock price of Apple.
+hist(aapl1$Adj.Close, col=rainbow(8))
+```
+
+```{r}
+#Problem 5
+data()
+#Observe the data sets available for explorations.
+attach(sleep)
+head(sleep)
+summary(sleep)
+#after analysis remove the data from the memory
+detach(sleep)
+#Also explore newer data sets in
+library (help=datasets)
+library(datasets)
+head(sleep)
+plot(sleep)
+```
+```{r}
+#Problem 6-1
+library("ggmap")
+library("maptools")
+library(maps)
+visited <- c("SFO", "Chennai", "London", "Melbourne", "Lima,Peru", "Johannesbury, SA")
+ll.visited <- geocode(visited)
+visit.x <- ll.visited$lon
+visit.y <- ll.visited$lat
+map("world", fill=TRUE, col="white", bg="lightblue", ylim=c(-60, 90), mar=c(0,0,0,0))
+points(visit.x,visit.y, col="red", pch=36)
+```
+
+```{r}
+#Problem 6-2
+library("ggmap")
+library("maptools")
+library(maps)
+visited <- c("SFO", "New York", "Buffalo", "Dallas, TX")
+ll.visited <- geocode(visited)
+visit.x <- ll.visited$lon
+visit.y <- ll.visited$lat
+map("state", fill=TRUE, col=rainbow(50), bg="lightblue", mar=c(0,0,0,0))
+points(visit.x,visit.y, col="yellow", pch=36)
+```
+
+```{r}
+#Problem 7-1
+library(datasets)
+library(lattice)
+splom(mtcars[c(1,3,4,5,6)], main="MTCARS Data")
+splom(mtcars[c(1,3,4,6)], main="MTCARS Data")
+splom(mtcars[c(1,3,4,6)], col=rainbow(7),main="MTCARS Data")
+```
+
+```{r}
+#Problem 7-2
+library(datasets)
+library(lattice)
+splom(rock[c(1,2,3,4)], main="ROCK Data")
+```
+
+```{r}
+#Problem 8
+# Choose landdata-states.csv upon file choice
+# ggplot with Example: Housing prices
+# Reference: http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html
+housing <- read.csv(file.choose())
+head(housing[1:5])
+library(ggplot2)
+ggplot(housing, aes(x = Home.Value)) + 
+  geom_histogram()
+ggplot(subset(housing, State %in% c("MA", "TX")),
+       aes(x=Date,
+           y=Home.Value,
+           color=State))+
+  geom_point()
+hp2001Q1 <- subset(housing, Date == 2001.25) 
+ggplot(hp2001Q1,
+       aes(y = Structure.Cost, x = Land.Value)) +
+  geom_point()
+ggplot(hp2001Q1,
+       aes(y = Structure.Cost, x = log(Land.Value))) +
+  geom_point()
+hp2001Q1$pred.SC <- predict(lm(Structure.Cost ~ log(Land.Value), data = hp2001Q1))
+
+p1 <- ggplot(hp2001Q1, aes(x = log(Land.Value), y = Structure.Cost))
+
+p1 + geom_point(aes(color = Home.Value)) +
+  geom_line(aes(y = pred.SC))
+p1 +
+  geom_point(aes(color = Home.Value)) +
+  geom_smooth()
+p1 + 
+  geom_text(aes(label=State), size = 3)
+library("ggrepel")
+p1 + 
+  geom_point() + 
+  geom_text_repel(aes(label=State), size = 3)
+p1 +
+  geom_point(aes(size = 2),# incorrect! 2 is not a variable
+             color="red") # this is fine -- all points red
+p1 +
+  geom_point(aes(color=Home.Value, shape = region))
+```
+```{r}
+#Part 2 - Example 1
+# Choose WHO_NREVSS_Clinical_Labs.csv upon file choice
+excelData<-read.csv(file.choose())
+#head(excelData)
+
+par(mar=c(5,5,5,5))
+barplot(excelData$TOTAL.A, col = "yellow", 
+        xlab="Week", ylab="Number of Positive Specimens", 
+        xaxt="n", yaxt="n", ylim = c(0,18000),space = 0)
+title("Influenza Positive Tests Reported to CDC by U.S. Clinical 
+      Laboratories, National Summary, 2017-2018 Season")
+y1<-seq(0,18000, by=2000)
+axis(2, at=y1, labels=TRUE, cex.axis=0.6, las=1)
+
+par(new=T)
+barplot(excelData$TOTAL.B, col = "green", 
+        xlab=NA, ylab = NA, xaxt="n", yaxt="n", ylim = c(0,18000), space = 0)
+
+par(new=T)
+plot(excelData$PERCENT.A, col="red", type="l", ylim=c(0,30), xlab=NA, ylab=NA, 
+     xaxt="n", yaxt="n", lwd=2, lty=2)
+lines(excelData$PERCENT.B,col="blue", lwd=2, lty=2)
+lines(excelData$PERCENT.POSITIVE,col="black", lwd=2, lty=1)
+
+x<- c(excelData$YEAR)
+y2<-seq(0,30, by=2)
+axis(1, at=1:19, labels=x, cex.axis=0.6, las=2)
+axis(4, at=y2, labels=TRUE, cex.axis=0.6, las=1)
+mtext("Percent Positive", side = 4, line = 2)
+
+legend("topleft", 
+       legend = c("A", "B", "Percent Positive","% Positive Flu A"," % Positive Flu B"),
+       col = rep(c("yellow", "green", "black","red","blue")), pch=c(15,15, NA, NA, NA), 
+       pt.cex=1, lty = c(0, 0, 1, 2, 2), cex = 0.6, box.lty = 0, inset = 0.1)
+
+```
+```{r}
+#Part 2 - Example 2
+# Choose WHO_NREVSS_Public_Health_Labs.csv upon file choice
+excelData<-read.csv(file.choose())
+#head(excelData)
+cols<-c(3,11,10,9,12,7,6,8)
+newData<-excelData[,cols]
+par(mar=c(5,5,5,5))
+barplot(`colnames<-`(t(newData[-1]), newData[,1]),         
+        legend.text = TRUE, 
+        col = c("chartreuse","darkolivegreen1","darkgreen","violet","red","orange","yellow"), 
+        args.legend = list(x = "topleft", bty = "n", inset=0.1, cex = 0.6),
+        ylab = "Number of Positive Specimens", xlab = "Week", yaxt="n")
+
+title("Influenza Positive Tests Reported to CDC by U.S. Public Health  
+      Laboratories, National Summary, 2017-2018 Season")
+
+#x<- c(newData$YEAR)
+#axis(1, at=1:19, labels=x, cex.axis=0.8, las=2)
+y1<-seq(0, 4000, by=500)
+axis(2, at=y1, labels=TRUE, cex.axis=0.8, las=1)
+
+```
+```{r}
+# Example 3
+#Choose ILINet.csv on file choice
+Data <- read.csv(file.choose(),head = TRUE, sep = ",")
+wili <- Data$X..WEIGHTED.ILI
+y910 <- 1:5
+y1112 <- 1:5
+y1415 <- 1:5
+y1516 <- 1:5
+y1617 <- 1:5
+y1718 <- 1:5
+for (i in 5:57) {
+y910[i-5] <- wili[i]
+}
+for (i in 57:109) {
+y1112[i-57] <- wili[i]
+}
+for (i in 109:161) {
+y1415[i-109] <- wili[i]
+}
+for (i in 161:213) {
+y1516[i-161] <- wili[i]
+}
+for (i in 213:265) {
+y1617[i-213] <- wili[i]
+}
+for (i in 265:286) {
+y1718[i-265] <- wili[i]
+}
+xlb <- seq(40,52)
+xlb2 <- seq(1,39)
+xlb <- c(xlb,xlb2)
+par(mar=c(5,5,5,5))
+plot(y910,type = "l", ylim = c(0,8), axes = "false", xlab = "Week", ylab = "% of Visits for ILI(Weighted)")
+title("Percentage of visits for Influenza-like illness(ILI), Reported by\n the U.S. Outpatient Influenza-like Surveillance Network (ILINet),\nleWeekly National Summary, 2017-2018 and Selected Previous Seasons", cex.main = 0.8)
+axis(1, at = 1:52,labels = xlb, pos = 0, line = 1)
+axis(2, at = 0:8,labels = c(0:8),pos = 1, line = 1)
+lines(y1112, type = "l", col = "green", lwd = 2)
+lines(y1415, type = "l", col = "pink", lwd = 2)
+lines(y1516, type = "l", col = "orange", lwd = 2)
+lines(y1718, type = "o", col = "red", lwd = 2)
+lines(y1617, type = "l", col = "blue", lwd = 2)
+legend("topright", legend = c("2016-17 season", "2015-16 season", "2014-15 season", "2011-12 season", "2009-10 season", "National Baseline", "2017-18 season"), col = c("blue","orange","pink", "green", "black", "black", "red"), lty = c(1,1,1,1,1,2,1), cex =0.5)
+abline(h=2.2, lty = 2, lwd = 2)
+```
+```{r}
+# Example 4
+# Choose NCHSData04.csv upon file choice
+Data <- read.csv(file.choose())
+base <- Data$Expected
+threshold <- Data$Threshold
+deaths <- Data$Percent.of.Deaths.Due.to.Pneumonia.and.Influenza
+weeks <- Data$Week
+at1 <- seq(from = 8, to = 431, by = 46)
+plot(base,type = "l", ylim = c(4,12), axes = "false", xlab = "MMWR Week", ylab = "% of All Deaths Due to P&I",lwd = 2, col = "green")
+axis(1,at = at1, labels = c("2009","2010","2011","2012","2013","2014","2015","2016","2017","2018"), pos = 5, line = 2, lwd.ticks = 0, tick = FALSE, cex.axis = 0.75)
+axis(1,at = 0:431, labels = weeks, pos = 4, line = 2, lwd.ticks = 0)
+lines(deaths, type = "l",col = "red", lwd =2)
+lines(threshold, type = "l", lwd =2, col = "blue")
+axis(2, at = 4:12, labels = c(4:12), line = 1, pos = 0)
+title("Pnemonia and Influenza Mortality from \nthe National Center for Health Statistics Mortality Surveillance System", cex.main = 1)
+legend("topright", legend = c("% of Deaths Due to P&I", "Epedimic Threshold", "Seasonal Baseline"), col = c("red","blue","green"), lty = c(1,1,1), cex =0.5)
+
+
+```
+
+```{r}
+#Part 2 - Example 5
+# Choose StateDataforMap_2017-18week4.csv upon file choice
+excelData<-read.csv(file.choose())
+#head(x)
+library(ggplot2)
+library(maps)
+region <- tolower(excelData$STATENAME)
+states <- map_data("state")
+ILI.Activity.Level<-excelData$ACTIVITY.LEVEL
+geo_data<-data.frame(region=unique(region),ILI.Activity.Level)
+map.df <- merge(states,geo_data, by="region", all.x =T)
+v <- qplot(long,lat, data=map.df, geom = "polygon",
+      main="2017-18 Influenza Season Week 4 ending Jan 27, 2018",group=group, fill=ILI.Activity.Level)
+
+v + scale_fill_manual(values = c("white", "green3", "orangered3", "greenyellow", "yellow2", "orange", "darkorange", "orangered", "orangered3"))
+```
+```{r}
+# Part 3
+# All the tweet data is in tweets.csv and tweets1.csv collected in multiple rounds
+# All the user data obtained from the tweets is in usernames.csv and usernames1.csv
+# cooordinates.csv and coordinates1.csv have the geocoded latlong information and is used to draw the final plot - Please use coordinates.csv and coordinates1.csv upon file choice to skip all the heavy work behind
+
+library(twitteR)
+options(httr_oauth_cache=F)
+API_KEY <- "E7jFmHkJSAIsPLfiO3zsS3zyD"
+API_SECRET <- "7zuL9Dir42KzWnGzMmuahDpXQR6tvQUvIxBXQTwNMIbu5BxHXC"
+ACCESS_TOKEN <- "961044767588192256-k0hKJQvYegnNIi9D12ZwXBiJn5qRXaX"
+ACCESS_SECRET <- "2PFxOaLVU67TuwF4x4N8RteMTOzSmcdETFVJ5kA4BFA3J"
+
+setup_twitter_oauth(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_SECRET)
+tweets <- searchTwitter("influenza -filter:retweets", n=5000)
+tweets_df <- twListToDF(tweets)
+write.csv(tweets_df, file="tweets.csv")
+usernames <- tweets_df$screenName
+names_df <- twListToDF(lookupUsers(unique(usernames)))
+write.csv(names_df, file="usernames.csv")
+
+library(ggmap)
+# Choose usernames.csv upon file choice 
+userInfo <- read.csv(file.choose(), stringsAsFactors=FALSE)
+#geocoded <- data.frame(stringsAsFactors = FALSE)
+
+library(stringr)
+unique_userInfo = userInfo[!duplicated(userInfo$location),]
+cleansed_userInfo <- str_replace_all(unique_userInfo$location,"[^[:graph:]]", " ")
+latlongDF <- geocode(cleansed_userInfo)
+latlongDF<-na.omit(latlongDF)
+write.csv(latlongDF, file="coordinates1.csv")
+
+library(sp)
+library(maps)
+library(maptools)
+# Choose coordinates.csv and coordinates1.csv on consecutive file choices
+latlongDF <- read.csv(file.choose())
+latlongDF1 <- read.csv(file.choose())
+
+final_latlongDF <- merge(latlongDF, latlongDF1)
+
+states <- map('state', fill=TRUE, col="transparent", plot=FALSE)
+IDs <- sapply(strsplit(states$names, ":"), function(x) x[1])
+states_sp <- map2SpatialPolygons(states, IDs=IDs,
+                     proj4string=CRS("+proj=longlat +datum=WGS84"))
+latlongSP <- SpatialPoints(final_latlongDF, 
+                  proj4string=CRS("+proj=longlat +datum=WGS84"))
+indices <- over(latlongSP, states_sp)
+stateNames <- sapply(states_sp@polygons, function(x) x@ID)
+# stateNames[indices]
+    
+finalStates <- na.omit(stateNames[indices])
+states_table <- table(finalStates)
+states_df <- data.frame(states_table)
+#states_df    
+library(ggplot2)
+library(maps)
+states <- map_data("state")
+geo_data<-data.frame(region=unique(states_df$finalStates),states_df$Freq)
+map.df <- merge(states,geo_data, by="region", all.x =T)
+Frequency<-map.df$states_df.Freq
+
+map.df[is.na(map.df)] <- 0
+#write.csv(map.df, file="states1.csv")
+library(dplyr)
+us <- map_data("state")
+
+gg <- ggplot()
+gg <- gg + geom_map(data=us, map=us,
+                    aes(x=long, y=lat, map_id=region),
+                     color="red", size=0.15)
+gg <- gg + geom_map(data=map.df, map=us,
+                    aes(fill=Frequency, map_id=region),
+                    color="#ffffff", size=0.15)
+gg <- gg + scale_fill_continuous(low='red', high='red4', 
+                                 guide='colorbar',na.value = 'red')
+gg <- gg + ggtitle("Heat Map, Data analysis of Influenza with Twitter")
+gg
+
+# References:
+# 1. https://stackoverflow.com/questions/29614972/ggplot-us-state-map-colors-are-fine-polygons-jagged-r
+# 2. https://stackoverflow.com/questions/8751497/latitude-longitude-coordinates-to-state-code-in-r
+
+
+```
+
